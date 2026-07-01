@@ -31,6 +31,7 @@ All output labels, hints, and interaction text should match the user's language.
 - **WebSearch first**: All data via WebSearch + WebFetch. No external MCP dependency
 - **MCP enhancement**: If TorrentClaw MCP or douban-mcp-cli is configured, prefer them for structured data
 - **Real results only**: All ratings and links must come from search results. Never fabricate data
+- **Link validity check**: Before presenting download links, perform a quick validity check on cloud drive / HTTP URLs (HEAD request with `curl -sL -o /dev/null -w "%{http_code}" --max-time 5`). Filter out 404/expired links. Magnet links are verified by hash format (`btih:[a-fA-F0-9]{40}`). Broken links = wasted user trust
 
 ## Workflow
 
@@ -83,10 +84,19 @@ Launch all searches in parallel. **Never wait for info results before searching 
 
 **Info searches (2-3):**
 ```
-- "{title} {year} IMDb rating cast director"
-- "{title} {year} Douban rating"              ← for Chinese/Asian titles
-- "{title} {year} Rotten Tomatoes score"       ← optional, as needed
+- "{title} {year} IMDb rating cast director plot"    ← cast/actors is mandatory
+- "{title} {year} 主演 演员 豆瓣评分"                  ← for Chinese cast names
+- "{title} {year} Rotten Tomatoes score review"       ← optional, as needed
 ```
+
+**Info extraction checklist:**
+- ☑ Title (original + localized)
+- ☑ Year + runtime
+- ☑ Director
+- ☑ **Main cast** (at least top 3-5 actors, with role names if available)
+- ☑ Ratings (IMDb + Douban minimum)
+- ☑ Genre tags
+- ☑ One-line plot summary
 
 **Download searches (WebSearch + direct scraping, launched simultaneously):**
 
@@ -94,14 +104,16 @@ Launch all searches in parallel. **Never wait for info results before searching 
 
 **Tier 1 — Direct scraping (highest link quality, runs in parallel):**
 ```
-bash scripts/search.sh seedhub "{title_en}"     ← direct magnet extraction from SeedHub
-bash scripts/search.sh yts "{title_en}"         ← YTS API returns structured JSON with magnet
-bash scripts/search.sh 1337x "{title_en}"       ← 1337x search page scraping
-bash scripts/search.sh quark "{title_zh}"       ← quark cloud drive link extraction
+bash scripts/search.sh cilixiong "{title}"       ← ⭐ 磁力熊 — 豆瓣高分，链接最优
+bash scripts/search.sh seedhub "{title_en}"      ← SeedHub 豆瓣匹配
+bash scripts/search.sh yts "{title_en}"          ← YTS API returns structured JSON with magnet
+bash scripts/search.sh 1337x "{title_en}"        ← 1337x search page scraping
+bash scripts/search.sh quark "{title_zh}"        ← quark cloud drive link extraction
 ```
 
 **Tier 2 — WebSearch fallback:**
 ```
+- "{title_zh} site:cilixiong.com"                ← ⭐ 搜索引擎缓存的磁力熊页面
 - "{title_zh} seedhub"
 - "{title_zh} {year} 磁力链接 BT下载 1080p"
 - "{title_zh} 夸克网盘"
@@ -158,15 +170,41 @@ Book:
 
 Display **50 items** in a compact ranked table. See `references/output-templates.md` for the discovery list template.
 
-### Step 3: Aggregate & Format
+### Step 3: Validate & Aggregate
 
-Compile search results into a unified structured output.
+**3a. Link validity check** — Before presenting, verify all download links:
+
+```
+# Cloud drive / HTTP links — HEAD request
+curl -sL -o /dev/null -w "%{http_code}" --max-time 5 "<url>"
+# 200/301/302/307 → keep. 404/403/410/500 → discard with reason "已失效"
+
+# Magnet links — verify hash format (no network check possible)
+echo "<magnet>" | grep -qP 'btih:[a-fA-F0-9]{40}'
+# valid format → keep. malformed → discard
+```
+
+Mark checked links with status: ✅ 有效 / ⚠️ 疑似失效 / ❌ 已失效
+
+**3b. Generate 看点 (highlight)** — Write one compelling sentence that makes the user want to watch/read this specific work. Tailor to the work's unique appeal:
+
+- 🎬 **Movie**: Hook from plot premise, directorial style, or standout cast. *Not* generic praise.
+- 📺 **TV Show**: Hook from premise, critical buzz, or binge-worthiness.
+- 📚 **Book**: Hook from theme, writing style, or why it resonates.
+
+Examples:
+```
+🔥 看点：诺兰用熵增逆转讲述了一部"倒着看也成立"的特工片——时间本身就是最大的反派。
+🔥 看点：智商在线的科幻 + 让人窒息的孤独感——一个人在火星上种土豆，却让全地球为他揪心。
+```
+
+**3c. Compile** — Merge info, cast, highlight, and validated download links into the output template.
 
 ## Output Format
 
-**Core rule: Info is compact and front-loaded. Download links are the main content.** Basic info + ratings take 1-2 lines. Download resources take 80%+ of the output. Links must be directly copyable — full magnet strings, cloud links with extraction codes.
+**Core rule: Info is compact and front-loaded. Download links are the main content.** Info header (title, ratings, cast, plot, 看点) takes 4-5 lines. Download resources take 80%+ of the output. Links must be directly copyable — full magnet strings, cloud links with extraction codes. Every link must pass validity check before display (✅/⚠️/❌).
 
-See `references/output-templates.md` for the full output templates (movie, TV show, book, creator works list).
+See `references/output-templates.md` for the full output templates (movie, TV show, book, creator works list, discovery list).
 
 ## Interaction Guide
 
@@ -179,11 +217,15 @@ See `references/interaction-guide.md` for:
 ## Key Notes
 
 1. **Disclaimer**: Download sections must include a "for personal study/research only" notice
-2. **Data authenticity**: All ratings and info must come from search results. Never fabricate
-3. **Deduplication**: Remove duplicate resources across sources (by file size, magnet hash)
-4. **Quality sorting**: Sort downloads by seed count / health. Show high-quality resources first
-5. **Books disclaimer**: Ebook availability is far lower than video. Manage user expectations upfront
-6. **Freshness**: Default to using the current year to help filter out stale resources
+2. **Data authenticity**: All ratings, cast, and info must come from search results. Never fabricate
+3. **Validity check**: Cloud/HTTP links → HEAD request. Magnet links → hash format check. Mark all links ✅/⚠️/❌
+4. **Cast is mandatory**: Always list 3-5 main actors with 🎭 prefix. Search `{title} 主演 演员` for Chinese names
+5. **看点 must be specific**: One tailored sentence per work. Never copy-paste generic praise
+6. **Deduplication**: Remove duplicate resources across sources (by file size, magnet hash)
+7. **Quality sorting**: Valid links first (✅), then by quality. Expired (❌) at bottom
+8. **Books disclaimer**: Ebook availability is far lower than video. Manage user expectations upfront
+9. **Freshness**: Default to using the current year to help filter out stale resources
+10. **cilixiong.com first**: Always try 磁力熊 as the primary download source — highest link quality and survival rate
 
 ## References
 

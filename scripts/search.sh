@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # chacha/search.sh — Direct resource search via curl scraping
 # Usage: ./search.sh <site> <query>
-# Sites: seedhub | yts | 1337x | quark
+# Sites: seedhub | yts | 1337x | quark | cilixiong
 
 set -euo pipefail
 
@@ -10,7 +10,7 @@ QUERY="${2:-}"
 UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
-[ -z "$SITE" ] && die "Usage: search.sh <seedhub|yts|1337x|quark> <query>"
+[ -z "$SITE" ] && die "Usage: search.sh <seedhub|yts|1337x|quark|cilixiong> <query>"
 
 urlencode() {
   local str="$1"
@@ -53,6 +53,43 @@ for m in data.get('data',{}).get('movies',[]):
     sort -u | head -10
   ;;
 
+cilixiong)
+  # 磁力熊 — 豆瓣高分电影1080P磁力下载 (cilixiong.com)
+  # Mirrors: cilixiong.com | cilixiong.net | cilixiong.cc
+  # Structure: <div class="masonry"> → <a> detail links → <div class="tabs-container"> → magnet <a>
+  DOMAIN="cilixiong.com"
+
+  # Try search page first, fall back to Google site: search
+  SEARCH_URL="https://${DOMAIN}/search?q=${ENCODED}"
+  HTML=$(curl -sL --max-time 10 -H "User-Agent: $UA" \
+    -H "Accept: text/html,application/xhtml+xml" \
+    -H "Accept-Language: zh-CN,zh;q=0.9" \
+    "$SEARCH_URL" 2>/dev/null || echo "")
+
+  if [ -z "$HTML" ] || echo "$HTML" | grep -qi "cloudflare\|cf-browser-verify\|Just a moment"; then
+    # Site behind Cloudflare — try mirror or output stub for WebSearch fallback
+    HTML=$(curl -sL --max-time 10 -H "User-Agent: $UA" \
+      -H "Accept-Language: zh-CN,zh;q=0.9" \
+      "https://cilixiong.net/search?q=${ENCODED}" 2>/dev/null || echo "")
+  fi
+
+  if [ -n "$HTML" ] && ! echo "$HTML" | grep -qi "cloudflare\|cf-browser-verify\|Just a moment"; then
+    # Extract detail page URLs from search results
+    echo "$HTML" | grep -oP 'href="(/movie/[^"]+\.html)"' | \
+      sed "s|href=\"|https://${DOMAIN}|; s|\"$||" | sort -u | head -5 | \
+      while read -r detail_url; do
+        detail_html=$(curl -sL --max-time 10 -H "User-Agent: $UA" \
+          -H "Accept-Language: zh-CN,zh;q=0.9" "$detail_url" 2>/dev/null || echo "")
+        # Extract magnet links from tabs-container
+        echo "$detail_html" | grep -oP 'href="(magnet:\?xt=urn:btih:[^"]+)"' | \
+          sed 's/href="//;s/"$//' | head -5
+      done
+  else
+    # Output stub — caller should fall back to WebSearch site:cilixiong.com
+    echo "CILIXIONG_CF_BLOCKED"
+  fi
+  ;;
+
 quark)
   # PanSearch API — aggregate quark cloud links
   URL="https://pan.search.avxhm.com/search?keyword=${ENCODED}"
@@ -62,7 +99,7 @@ quark)
   ;;
 
 *)
-  die "Unknown site: $SITE. Valid: seedhub | yts | 1337x | quark"
+  die "Unknown site: $SITE. Valid: seedhub | yts | 1337x | quark | cilixiong"
   ;;
 
 esac

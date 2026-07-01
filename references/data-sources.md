@@ -83,11 +83,31 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 
 ### 电影/剧集 BT/磁力
 
-#### 🧲 中文磁力搜索站（可通过 WebSearch `{title} + 站名` 命中）
+#### ⭐ 首选：磁力熊 (cilixiong.com)
 
-| 站点 | 域名 | 特点 |
-|------|------|------|
-| **BT磁力熊** | btcilixiong.com | 豆瓣高分电影1080P，无广告 |
+磁力熊是目前实测最优质的中文磁力站，专注豆瓣 7.5 分以上电影 1080P 下载，无广告、链接存活率高。
+
+| 项目 | 详情 |
+|------|------|
+| **主站** | `cilixiong.com` |
+| **镜像** | `cilixiong.net`、`cilixiong.cc` |
+| **定位** | 豆瓣高分电影1080P磁力下载 |
+| **筛选标准** | 只收录豆瓣 7.5 分以上影片 |
+| **CDN** | Cloudflare |
+| **直接抓取** | `bash scripts/search.sh cilixiong "{title}"` |
+
+**站点结构：**
+- 列表页：`/movie/index.html` → `/movie/index_2.html` ...（分页）
+- 详情页：`/movie/{id}.html`
+- 磁力链接位于：`<div class="tabs-container">` → `<a href="magnet:?xt=urn:btih:...">`
+- 电影名/评分/日期：详情页前 3 个 `<span>` 标签
+
+**抓取策略：**
+1. 直接 `curl` 搜索页 → 提取详情页 URL → 逐个提取磁力链接（可能被 Cloudflare 拦截）
+2. WebSearch `site:cilixiong.com {title}` → 命中搜索引擎缓存的详情页 → WebFetch 提取磁力链接
+3. 镜像轮换：主站不可用时尝试 `.net` / `.cc`
+
+#### 🧲 其他中文磁力搜索站
 | **磁力猫** | cilimao.com | 老牌中文站，支持画质/体积筛选 |
 | **磁力犬** | ciliquan.com | 零广告零跳转 |
 | **磁力悠悠** | ciliuu.com | 自研爬虫，资源新 |
