@@ -81,7 +81,9 @@ npx skills add brickhu/chacha
 
 ## 环境要求
 
-- [Claude Code](https://claude.ai/code)（该技能作为 Claude Code 技能运行）
+- 在以下任一 AI harness 中运行：
+  - **Claude Code** / **Codex** / **Cursor** / **Windsurf** / **Cline** / **Trae**（快速安装）
+  - **Workbuddy** / **Aside**（手动安装）
 - 无需额外依赖 — 使用 WebSearch + bash 抓取脚本
 
 ## 免责声明

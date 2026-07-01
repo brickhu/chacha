@@ -80,7 +80,9 @@ All results include:
 
 ## Requirements
 
-- [Claude Code](https://claude.ai/code) (the skill runs as a Claude Code skill)
+- Running in one of the following AI harnesses:
+  - **Claude Code** / **Codex** / **Cursor** / **Windsurf** / **Cline** / **Trae** (quick install)
+  - **Workbuddy** / **Aside** (manual install)
 - No additional dependencies — uses WebSearch + bash scraping scripts
 
 ## Disclaimer
