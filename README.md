@@ -2,35 +2,66 @@
 
 > 查查 (chá chá) means "look it up" in Chinese. Just ask — chacha finds it.
 
-[![中文文档](https://img.shields.io/badge/文档-中文版-red)](./README_cn.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![skills.sh](https://img.shields.io/badge/skills.sh-chacha-38bdae)](https://skills.sh/brickhu/chacha)
+[English](./README.md) | [中文](./README_cn.md)
 
 chacha is an AI-powered resource discovery agent for **movies, books, and TV shows**. It aggregates ratings from multiple platforms (IMDb, Douban, Rotten Tomatoes, Goodreads) and finds download links (magnet, BT, cloud drives) — all in one shot.
 
 ## Installation
 
+### Quick Install
+
+For **Claude Code**, **Codex**, **Cursor**, **Windsurf**, **Cline**, and **Trae** — just one command:
+
 ```bash
 npx skills add brickhu/chacha
 ```
 
-This installs the `chacha` skill globally. Once installed, use `/chacha <query>` in Claude Code to start searching.
+Once installed, use `/chacha <query>` to start searching.
+
+### Manual Install
+
+For harnesses that don't support `npx skills add` (e.g. **Workbuddy**, **Aside**), download and install manually:
+
+1. Download the latest release:
+   ```bash
+   curl -L -o chacha.zip https://github.com/brickhu/chacha/archive/refs/heads/master.zip
+   ```
+
+2. Upload the `chacha.zip` file in your harness client to install.
 
 ## Features
 
 - 🎬 **Movie search** — ratings from IMDb, Douban, Rotten Tomatoes + magnet/BT/cloud links
 - 📺 **TV show search** — season-by-season ratings + complete series downloads
 - 📚 **Book search** — Goodreads & Douban ratings + ebook download links
-- 🎥 **Creator mode** — search by director or author to discover their works
-- 🌐 **Multi-language** — responds in the same language as your query (English, 中文, 日本語)
-- ⚡ **One-shot** — info and download links returned simultaneously, no step-by-step
 
 ## Quick Start
+
+**Search by title:**
 
 ```
 /chacha Interstellar
 /chacha 星际穿越
 /chacha 千と千尋の神隠し
-/chacha Christopher Nolan
 /chacha 三体
+```
+
+**Search by creator:**
+
+```
+/chacha Christopher Nolan
+/chacha 诺兰
+/chacha 刘慈欣
+```
+
+**Discover trending / new / top:**
+
+```
+/chacha hot
+/chacha new
+/chacha top
 ```
 
 ## How It Works

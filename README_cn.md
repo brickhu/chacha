@@ -2,35 +2,67 @@
 
 > "查查"就是帮你查一查。想知道什么，问 chacha 就好。
 
-[![English Docs](https://img.shields.io/badge/docs-English-blue)](./README.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![skills.sh](https://img.shields.io/badge/skills.sh-chacha-38bdae)](https://skills.sh/brickhu/chacha)
+
+[English](./README.md) | [中文](./README_cn.md)
 
 chacha 是一个 AI 驱动的资源发现代理，专注于**电影、图书和电视剧**。它聚合来自多个平台（IMDb、豆瓣、Rotten Tomatoes、Goodreads）的评分，并一站式查找下载链接（磁力链接、BT、云盘）。
 
 ## 安装
 
+### 快速安装
+
+支持 **Claude Code**、**Codex**、**Cursor**、**Windsurf**、**Cline**、**Trae**，一条命令即可：
+
 ```bash
 npx skills add brickhu/chacha
 ```
 
-此命令会将 `chacha` 技能安装到全局。安装完成后，在 Claude Code 中使用 `/chacha <查询内容>` 即可开始搜索。
+安装完成后，使用 `/chacha <查询内容>` 即可开始搜索。
+
+### 手动安装
+
+对于不支持 `npx skills add` 的 harness（如 **Workbuddy**、**Aside**），可以下载后手动安装：
+
+1. 下载最新版本：
+   ```bash
+   curl -L -o chacha.zip https://github.com/brickhu/chacha/archive/refs/heads/master.zip
+   ```
+
+2. 在你的 harness 客户端中上传 `chacha.zip` 安装包即可。
 
 ## 功能特性
 
 - 🎬 **电影搜索** — IMDb、豆瓣、Rotten Tomatoes 评分 + 磁力/BT/云盘链接
 - 📺 **剧集搜索** — 分季评分 + 全季下载资源
 - 📚 **图书搜索** — Goodreads 和豆瓣评分 + 电子书下载链接
-- 🎥 **创作者模式** — 按导演或作者搜索其代表作品
-- 🌐 **多语言适配** — 根据你的输入语言自动切换回复语言（中文、English、日本語）
-- ⚡ **一步到位** — 信息和下载链接同步返回，无需逐步确认
 
 ## 快速上手
+
+**按标题搜索：**
 
 ```
 /chacha 星际穿越
 /chacha Interstellar
 /chacha 千と千尋の神隠し
-/chacha 诺兰
 /chacha 三体
+```
+
+**按创作者搜索：**
+
+```
+/chacha 诺兰
+/chacha Christopher Nolan
+/chacha 刘慈欣
+```
+
+**发现热门 / 最新 / 高分：**
+
+```
+/chacha hot
+/chacha new
+/chacha top
 ```
 
 ## 工作原理
