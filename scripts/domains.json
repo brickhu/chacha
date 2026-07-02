@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "updated": "2026-07-02",
+  "sources": {
+    "seedhub": {
+      "domain": "www.seedhub.cc",
+      "mirrors": [],
+      "path": "/search?q={query}"
+    },
+    "yts": {
+      "domain": "yts.mx",
+      "mirrors": [],
+      "path": "/api/v2/list_movies.json?query_term={query}&limit=10"
+    },
+    "1337x": {
+      "domain": "1337x.to",
+      "mirrors": [],
+      "path": "/search/{query}/1/"
+    },
+    "cilixiong": {
+      "domain": "cilixiong.com",
+      "mirrors": ["cilixiong.net", "cilixiong.cc"],
+      "path": "/search?q={query}"
+    },
+    "quark": {
+      "domain": "pan.search.avxhm.com",
+      "mirrors": [],
+      "path": "/search?keyword={query}"
+    },
+    "bt4g": {
+      "domain": "bt4gpro.com",
+      "mirrors": ["bt4g.org"],
+      "path": "/search?q={query}"
+    },
+    "bitsearch": {
+      "domain": "api.bitsearch.to",
+      "mirrors": [],
+      "path": "/api/search?q={query}"
+    },
+    "nyaa": {
+      "domain": "nyaa.si",
+      "mirrors": [],
+      "path": "/?q={query}&s=seeders&o=desc"
+    }
+  }
+}

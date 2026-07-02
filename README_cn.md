@@ -7,84 +7,74 @@
 
 [English](./README.md) | [中文](./README_cn.md)
 
-chacha 是一个 AI 驱动的资源发现代理，专注于**电影、图书和电视剧**。它聚合来自多个平台（IMDb、豆瓣、Rotten Tomatoes、Goodreads）的评分，并一站式查找下载链接（磁力链接、BT、云盘）。
+chacha 是一个 AI 驱动的资源发现代理，专注于**电影、剧集和图书**。三大核心能力：
+
+## 1. 提取有效链接
+
+传统 BT 站需要：搜索 → 找条目 → 进详情页 → 找磁力按钮 → 复制。每一步都可能是死胡同——页面打不开、链接已失效、需要点击跳转。
+
+chacha 直接一步到位：**从搜索页、API、DHT 聚合器同时提取磁力和网盘链接**，对每个 HTTP 链接做 HEAD 请求验证存活状态，去重后输出可直接复制的完整 `magnet:?xt=urn:btih:...` 字符串。
+
+> 每条链接都经过验证 ✅，不会出现复制下来才发现是死链的情况。
+
+## 2. 跨源聚合搜索
+
+**9 个搜索源同时并行**，覆盖面远超任何单一 BT 站：
+
+| 源 | 定位 |
+|---|---|
+| 磁力熊 | 豆瓣高分电影 1080P |
+| SeedHub | 豆瓣榜单自动匹配 |
+| YTS | 小体积高清电影 |
+| 1337x | 4K 资源 |
+| BT4G | DHT 聚合，千万级索引 |
+| BitSearch | DHT 聚合，结构化数据 |
+| Nyaa | 动漫首选 |
+| 夸克网盘 | 中文云盘资源 |
+| WebSearch | 兜底搜索 |
+
+**域名自愈**：站点被封/换域名时，AI 自动通过 WebSearch 发现新地址并缓存，后续搜索秒级恢复。不依赖任何单一网站，不依赖 GitHub 同步。
+
+## 3. 信息聚合总结
+
+一条消息包含传统流程需要 3-5 个网站才能凑齐的信息：
+
+```
+🎬 星际穿越 Interstellar (2014)
+⭐ IMDb 8.7 · 豆瓣 9.4 · RT 86%/91%
+🎭 马修·麦康纳 / 安妮·海瑟薇 / 杰西卡·查斯坦
+🔥 看点：诺兰用虫洞和黑洞把硬科幻拍成了父女情——五维空间那场戏让整个影院静默
+
+磁力链接:
+✅ magnet:?xt=urn:btih:XXXX  1080p 12.3GB  seeds:1500
+✅ magnet:?xt=urn:btih:YYYY  4K HDR 45.2GB  seeds:320
+⚠️ 夸克网盘 https://pan.quark.cn/s/ZZZZ  提取码: chacha
+```
+
+## 快速上手
+
+```
+/chacha 星际穿越
+/chacha Interstellar
+/chacha 诺兰              ← 创作者模式，列出作品列表
+/chacha hot               ← 发现模式：热搜/最新/排行榜
+```
 
 ## 安装
-
-### 快速安装
-
-支持 **Claude Code**、**Codex**、**Cursor**、**Windsurf**、**Cline**、**Trae**，一条命令即可：
 
 ```bash
 npx skills add brickhu/chacha
 ```
 
-安装完成后，使用 `/chacha <查询内容>` 即可开始搜索。
-
-### 手动安装
-
-对于不支持 `npx skills add` 的 harness（如 **Workbuddy**、**Aside**），可以下载后手动安装：
-
-1. 下载最新版本：
-   ```bash
-   curl -L -o chacha.zip https://github.com/brickhu/chacha/archive/refs/heads/master.zip
-   ```
-
-2. 在你的 harness 客户端中上传 `chacha.zip` 安装包即可。
-
-## 功能特性
-
-- 🎬 **电影搜索** — IMDb、豆瓣、Rotten Tomatoes 评分 + 磁力/BT/云盘链接
-- 📺 **剧集搜索** — 分季评分 + 全季下载资源
-- 📚 **图书搜索** — Goodreads 和豆瓣评分 + 电子书下载链接
-
-## 快速上手
-
-**按标题搜索：**
-
-```
-/chacha 星际穿越
-/chacha Interstellar
-/chacha 千と千尋の神隠し
-/chacha 三体
-```
-
-**按创作者搜索：**
-
-```
-/chacha 诺兰
-/chacha Christopher Nolan
-/chacha 刘慈欣
-```
-
-**发现热门 / 最新 / 高分：**
-
-```
-/chacha hot
-/chacha new
-/chacha top
-```
+安装完成后，使用 `/chacha <查询内容>` 即可开始搜索。支持 Claude Code、Codex、Cursor、Windsurf、Cline、Trae。
 
 ## 工作原理
 
-1. 解析你的查询，判断媒体类型（电影/剧集/图书）或进入创作者模式
-2. 并行搜索网络上的评分和元数据
-3. 从 SeedHub、YTS、1337x、夸克网盘等来源抓取下载链接
-4. 返回结构化表格，包含可复制的磁力链接和云盘地址
-
-## 输出格式
-
-所有结果包含：
-- **紧凑的信息头部** — 标题、年份、导演/作者、评分（1-2 行）
-- **下载资源表格** — 类型、画质、大小、可复制链接、提取码
-- **快捷操作** — 复制到剪贴板、浏览器打开、打开磁力链接、直接下载
-
-## 环境要求
-
-- 在以下任一 AI harness 中运行：
-  - **Claude Code** / **Codex** / **Cursor** / **Windsurf** / **Cline** / **Trae**（快速安装）
-  - **Workbuddy** / **Aside**（手动安装）
-- 无需额外依赖 — 使用 WebSearch + bash 抓取脚本
+1. 识别查询意图（作品/创作者/发现模式）
+2. 并行搜索 IMDb、豆瓣、烂番茄获取评分与卡司
+3. 并行运行 9 个搜索源提取磁力/网盘链接
+4. 验证链接存活状态，去重，按质量排序
+5. 生成包含信息摘要和可复制链接的回复
 
 ## 免责声明
 
@@ -93,8 +83,3 @@ npx skills add brickhu/chacha
 ## 许可证
 
 MIT
-
-## 相关链接
-
-- [English README](./README.md)
-- 远程仓库：[github.com/brickhu/chacha](https://github.com/brickhu/chacha)

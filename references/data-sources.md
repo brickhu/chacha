@@ -81,6 +81,8 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 
 ## 下载资源类
 
+> **域名活性管理**：`search.sh` 域名解析优先级：AI 缓存 (`/tmp/chacha-domains-cache.json`) > `scripts/domains.json`（硬编码）。站点域名过期时，AI 自动通过 WebSearch 发现新域名并写入缓存，后续搜索自动使用新域名。硬编码的 `domains.json` 作为兜底。
+
 ### 电影/剧集 BT/磁力
 
 #### ⭐ 首选：磁力熊 (cilixiong.com)
@@ -121,13 +123,42 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 
 | 站点 | 域名 | 特点 |
 |------|------|------|
+| **BT4G** | bt4gpro.com | ⭐ DHT聚合，千万级索引。`scripts/search.sh bt4g` 直出磁力+种子数 |
+| **BitSearch** | bitsearch.to | ⭐ DHT聚合，JSON API，磁力+种子+大小结构化数据。`scripts/search.sh bitsearch` |
 | **1337x** | 1337x.to | 4K资源多，按热度排序 |
 | **YTS** | yts.mx | 小体积高清电影，1080p仅1-3GB |
 | **The Pirate Bay** | thepiratebay.org | 全球种子最全 |
 | **TorrentGalaxy** | torrentgalaxy.to | 更新快，含IMDb评分 |
-| **Nyaa** | nyaa.si | 动漫首选 |
-| **BT4G** | bt4gpro.com | DHT聚合，千万级索引 |
+| **Nyaa** | nyaa.si | ⭐ 动漫首选，按种子数排序。`scripts/search.sh nyaa` |
 | **Knaben** | knaben.org | 显示种子健康度 |
+
+##### BT4G 抓取说明
+
+```
+搜索页: https://bt4gpro.com/search?q={query}
+策略: curl 搜索页 → python3 解析 magnet 链接 + 种子数
+    - 优先提取 magnet:?xt=urn:btih: 直接链接
+    - 回退提取 /torrent/{hash} 链接补全 magnet
+    - 再回退提取任意 40 位 hex hash
+输出: magnet 链接 / "magnet | title | seeds:N | size" 格式
+```
+
+##### BitSearch API 说明
+
+```
+API: https://api.bitsearch.to/api/search?q={query}
+类型: JSON API，直接解析
+返回结构: { status, data: { results: [{ magnet, name, seeds, leechers, size }] } }
+输出: "magnet | name | seeds:N | size" 格式
+```
+
+##### Nyaa 抓取说明
+
+```
+搜索页: https://nyaa.si/?q={query}&s=seeders&o=desc (按做种数排序)
+策略: curl 搜索页 → python3 解析表格行提取 magnet + seeds + leechers
+输出: "magnet | seeds:N | leechers:N" 格式
+```
 
 #### MCP 工具（优先使用）
 
@@ -162,6 +193,16 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 # 动漫
 "{title} {year} 动漫 1080p 磁力"
 ```
+
+### 网盘资源
+
+| 来源 | 类型 | 说明 |
+|------|------|------|
+| **夸克网盘** | 云盘 | 中文用户常用，命中率高。`scripts/search.sh quark` 通过 PanSearch 聚合搜索 |
+| **阿里云盘** | 云盘 | 不限速，资源丰富。搜索站多为JS渲染，通过 WebSearch `"{title} 阿里云盘"` |
+| **百度网盘** | 云盘 | 用户基数最大，但搜索关键词敏感。通过 WebSearch `"{title} 百度网盘"` |
+
+> 网盘资源是磁力/BT 的重要补充，老片/冷门片常以网盘形式传播。
 
 ### 图书电子版
 
