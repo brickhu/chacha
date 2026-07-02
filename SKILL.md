@@ -24,7 +24,8 @@ All output labels, hints, and interaction text should match the user's language.
 
 ## Core Principles
 
-- **Downloads first**: Download links are the primary output. Info is compact and front-loaded; 80% of the output is copyable download links
+- **Info always wins**: Even if all download sources fail, still output the info section (ratings, cast, plot, highlight). A result with no links is better than no result.
+- **Downloads first**: Download links are the primary output when available. Info is compact and front-loaded; 80% of the output is copyable download links
 - **One shot**: Info and download searches run in parallel — no step-by-step confirmation. The user invoked this skill to find resources
 - **Copyable links**: Display magnet links as full `magnet:?xt=urn:btih:...` strings. Cloud drive links include extraction codes. No icon-only placeholders
 - **WebSearch first**: All data via WebSearch + WebFetch. No external MCP dependency
@@ -280,9 +281,13 @@ Examples:
 
 **3c. Compile** — Merge info, cast, highlight, and validated download links into the output template.
 
+> **⚠️ Critical: never return nothing.** If all download sources failed (scripts timed out, sites blocked, no matches), still output the info section with a note: `"No download resources found for this title."` The user gets ratings, cast, and highlight — useful information even without links. An empty response is the worst outcome.
+
 ## Output Format
 
 **Core rule: Info is compact and front-loaded. Download links are the main content.** Info header (title, ratings, cast, plot, highlight) takes 4-5 lines. Download resources take 80%+ of the output. Links must be directly copyable — full magnet strings, cloud links with extraction codes. Every link must pass validity check before display (✅/⚠️/❌).
+
+**Info is mandatory, links are optional.** If zero download resources are found, output the info section alone with `"No download resources found"` — never return empty-handed.
 
 See `references/output-templates.md` for the full output templates (movie, TV show, book, anime, creator works list, discovery list).
 
