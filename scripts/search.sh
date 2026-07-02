@@ -3,55 +3,51 @@
 # Usage: ./search.sh <site> <query>
 # Sites: seedhub | yts | 1337x | quark | cilixiong | bt4g | bitsearch | nyaa
 #
-# Domain resolution (priority order):
-#   1. /tmp/chacha-domains-cache.json — AI 通过 WebSearch 发现的域名
-#   2. scripts/domains.json — 硬编码默认域名
-#   全部失败 → 输出 SITE_DEAD:<site>，AI 会自动 WebSearch 找新域名
+# Domain resolution: reads ~/.config/chacha/sources.json (single source of truth)
+#   1st run: auto-seeded from shipped scripts/domains.json
+#   AI self-healing + user custom sources both write to the same file
 
 set -euo pipefail
 
 SITE="${1:-}"
 QUERY="${2:-}"
 UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+SOURCES_FILE="$HOME/.config/chacha/sources.json"
+DOMAINS_SEED="$(dirname "$0")/domains.json"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
+
+# ─── Init sources file ──────────────────────────────────────────────────
+
+# On first run, seed ~/.config/chacha/sources.json from shipped domains.json
+_init_sources() {
+  if [ ! -f "$SOURCES_FILE" ]; then
+    mkdir -p "$(dirname "$SOURCES_FILE")"
+    if [ -f "$DOMAINS_SEED" ]; then
+      cp "$DOMAINS_SEED" "$SOURCES_FILE"
+    else
+      echo '{"sources":{}}' > "$SOURCES_FILE"
+    fi
+  fi
+}
 
 # ─── List sources mode ──────────────────────────────────────────────────
 
 if [ "$SITE" = "--list-sources" ]; then
-  DOMAINS_FILE="$(dirname "$0")/domains.json"
-  CUSTOM_SOURCES="$HOME/.config/chacha/sources.json"
+  _init_sources
   python3 -c "
-import json, os
-
-# Read defaults
-defaults = {}
+import json, os, sys
+file = os.path.expanduser('$SOURCES_FILE')
 try:
-    with open('$DOMAINS_FILE') as f:
-        defaults = json.load(f).get('sources', {})
-except: pass
-
-# Read custom (overrides defaults)
-custom = {}
-custom_file = '$CUSTOM_SOURCES'
-if os.path.exists(custom_file):
-    try:
-        with open(custom_file) as f:
-            custom = json.load(f)
-    except: pass
-
-# Merge: custom overrides defaults
-all_sources = {}
-all_sources.update(defaults)
-all_sources.update(custom)
-
-# Output structured list
-for name, info in sorted(all_sources.items()):
+    with open(file) as f:
+        data = json.load(f)
+except:
+    data = {}
+for name, info in sorted(data.get('sources', {}).items()):
     domain = info.get('domain', '')
     path = info.get('path', '/')
     mirrors = info.get('mirrors', [])
-    origin = 'custom' if name in custom else ('default' if name in defaults else 'unknown')
-    print(f'{name}|{domain}|{path}|{\",\".join(mirrors)}|{origin}')
+    print(f'{name}|{domain}|{path}|{\",\".join(mirrors)}')
 " 2>/dev/null
   exit 0
 fi
@@ -66,60 +62,33 @@ ENCODED=$(urlencode "$QUERY")
 
 # ─── Domain resolution ──────────────────────────────────────────────────
 
-DOMAINS_FILE="$(dirname "$0")/domains.json"
-DOMAINS_CACHE="/tmp/chacha-domains-cache.json"
-CUSTOM_SOURCES="$HOME/.config/chacha/sources.json"
+# Reads domains from ~/.config/chacha/sources.json.
+# On first run, auto-seeds from shipped scripts/domains.json.
+# AI self-healing and user "add source" both write to the same file.
 
-# Returns domain per line: 自愈缓存 → 用户自定义源 → 硬编码默认源
 _resolve_domains() {
+  _init_sources
   local site="$1"
   python3 -c "
 import json, os, sys
 
-cache_file = '$DOMAINS_CACHE'
-defaults_file = '$DOMAINS_FILE'
-custom_file = '$CUSTOM_SOURCES'
+file = os.path.expanduser('$SOURCES_FILE')
 site_key = '$site'
 output = []
 
-# 1) Self-healing cache (AI-discovered domains)
-if os.path.exists(cache_file):
-    try:
-        with open(cache_file) as f:
-            cache = json.load(f)
-        entry = cache.get(site_key, {})
-        d = entry.get('domain', '')
-        if d and d not in output:
-            output.append(d)
-    except: pass
-
-# 2) User custom sources (~/.config/chacha/sources.json)
-#    Survives skill updates — user can add/modify sources via natural language
-if os.path.exists(custom_file):
-    try:
-        with open(custom_file) as f:
-            custom = json.load(f)
-    except: pass
-    src = custom.get(site_key, {})
-    d = src.get('domain', '')
-    if d and d not in output:
-        output.append(d)
-    for m in src.get('mirrors', []):
-        if m and m not in output:
-            output.append(m)
-
-# 3) Defaults (shipped domains.json)
 try:
-    with open(defaults_file) as f:
-        defaults = json.load(f)
-    src = defaults.get('sources', {}).get(site_key, {})
-    d = src.get('domain', '')
-    if d and d not in output:
-        output.append(d)
-    for m in src.get('mirrors', []):
-        if m and m not in output:
-            output.append(m)
-except: pass
+    with open(file) as f:
+        data = json.load(f)
+except:
+    data = {}
+
+src = data.get('sources', {}).get(site_key, {})
+d = src.get('domain', '')
+if d:
+    output.append(d)
+for m in src.get('mirrors', []):
+    if m and m not in output:
+        output.append(m)
 
 for d in output:
     print(d)

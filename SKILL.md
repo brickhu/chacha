@@ -273,8 +273,19 @@ The scraping script `scripts/search.sh` uses `curl` with proper User-Agent to fe
 
 1. WebSearch `"{site name} 新地址 2026"` or `"{site name} 最新可用域名"`
 2. Extract the current working domain from search results
-3. Write to cache: use `python3 -c "import json; ..."` to update `/tmp/chacha-domains-cache.json` (append, don't overwrite other sites)
-4. Re-run `search.sh` — it will use the cached domain first
+3. Update `~/.config/chacha/sources.json`:
+   ```bash
+   python3 -c "
+   import json, os
+   file = os.path.expanduser('~/.config/chacha/sources.json')
+   with open(file) as f:
+       data = json.load(f)
+   data['sources']['{site}']['domain'] = '{new_domain}'
+   with open(file, 'w') as f:
+       json.dump(data, f, indent=2)
+   "
+   ```
+4. Re-run `search.sh` — it reads the same file, new domain takes effect immediately
 5. If still failing, fall back to Tier 2 WebSearch
 
 #### Creator Mode (works list)
@@ -416,17 +427,17 @@ The AI should:
    - `/{query}` (path-based search)
    - `/search?q={query}` (query param)
    - `/search?keyword={query}`
-3. **Write** to `~/.config/chacha/sources.json`:
+3. **Write** to `~/.config/chacha/sources.json` (note: data is nested under `"sources"` key):
    ```bash
    mkdir -p ~/.config/chacha
    python3 -c "
    import json, os
    file = os.path.expanduser('~/.config/chacha/sources.json')
-   data = {}
+   data = {'sources': {}}
    if os.path.exists(file):
        with open(file) as f:
            data = json.load(f)
-   data['{source_name}'] = {
+   data['sources']['{source_name}'] = {
        'domain': '{domain}',
        'mirrors': [],
        'path': '{path}'
@@ -437,12 +448,11 @@ The AI should:
    ```
 4. **Confirm** to the user: "已添加搜索源 `{name}` ({domain})，下次搜索自动生效"
 
-**Merge priority** (highest to lowest):
-1. `/tmp/chacha-domains-cache.json` — AI self-healing cache
-2. `~/.config/chacha/sources.json` — user custom sources
-3. `scripts/domains.json` — shipped defaults
+**Single source of truth**: All sources live in `~/.config/chacha/sources.json`. There is no merge priority — everything is in one file.
 
-Custom sources with the same key name as a default source **override** the default (e.g. `"bt4g": {"domain": "bt4g.life"}` replaces the shipped bt4g entry).
+- On first run: `search.sh` auto-seeds the file from shipped `scripts/domains.json`
+- On skill update: new default sources are merged in (existing entries preserved, only new ones added)
+- AI self-healing and user "add source" both write to the same file
 
 ## Interaction Guide
 

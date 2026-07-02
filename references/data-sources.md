@@ -81,7 +81,7 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 
 ## 下载资源类
 
-> **域名活性管理**：`search.sh` 域名解析优先级：AI 缓存 (`/tmp/chacha-domains-cache.json`) > `scripts/domains.json`（硬编码）。站点域名过期时，AI 自动通过 WebSearch 发现新域名并写入缓存，后续搜索自动使用新域名。硬编码的 `domains.json` 作为兜底。
+> **域名活性管理**：所有搜索源统一存储在 `~/.config/chacha/sources.json`（一个文件）。首次运行自动从 `scripts/domains.json` 初始化。站点域名过期时，AI 自动通过 WebSearch 发现新域名并写入同一文件。用户自定义源、AI 自愈都修改同一个文件，无多级合并逻辑。
 
 ### 电影/剧集 BT/磁力
 
