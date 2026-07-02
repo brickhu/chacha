@@ -73,16 +73,34 @@ _resolve_domains() {
 import json, os, sys
 
 file = os.path.expanduser('$SOURCES_FILE')
+seed_file = '$DOMAINS_SEED'
 site_key = '$site'
 output = []
 
-try:
-    with open(file) as f:
-        data = json.load(f)
-except:
-    data = {}
+# Read user sources.json
+data = {}
+if os.path.exists(file):
+    try:
+        with open(file) as f:
+            data = json.load(f)
+    except: pass
 
-src = data.get('sources', {}).get(site_key, {})
+# Accept both {'sources':{}} (default format) and flat {key:{}} (custom format)
+sources = data.get('sources', {})
+if not sources and data:
+    # Flat format — treat whole dict as sources
+    sources = data
+
+# Merge seed (domains.json) for any missing keys
+try:
+    with open(seed_file) as f:
+        seed = json.load(f).get('sources', {})
+    for k, v in seed.items():
+        if k not in sources:
+            sources[k] = v
+except: pass
+
+src = sources.get(site_key, {})
 d = src.get('domain', '')
 if d:
     output.append(d)

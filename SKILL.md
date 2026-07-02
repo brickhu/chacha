@@ -478,11 +478,27 @@ Examples:
 
 ## Output Format
 
-**Core rule: Info is compact and front-loaded. Download links are the main content.** Info header (title, ratings, cast, plot, highlight) takes 4-5 lines. Download resources take 80%+ of the output. Links must be directly copyable — full magnet strings, cloud links with extraction codes. Every link must pass validity check before display (✅/⚠️/❌).
+**Template** (`references/output-templates.md`):
 
-**Info is mandatory, links are optional.** If zero download resources are found, output the info section alone with `"No download resources found"` — never return empty-handed.
+```
+# 🎬 星际穿越 Interstellar
+* **导演**: Christopher Nolan · 2014 · USA/UK · 169min
+* **主演**: 马修·麦康纳 / 安妮·海瑟薇 / ...
+* **评分**: ★ ★ ★ ★ ★ ｜ IMDb 8.7 · 豆瓣 9.4 · RT 86%/91%
 
-See `references/output-templates.md` for the full output templates (movie, TV show, book, anime, creator works list, discovery list).
+一队探险者穿越虫洞，为人类寻找新家园。
+
+> 🔥 Nolan uses entropy reversal to tell a spy thriller...
+
+## 🔗 Download Resources
+
+| # | Type | Quality | Size | Seeds | Status | Link |
+|---|------|---------|------|-------|--------|------|
+| 1 | 🧲 Magnet | 1080p | 12GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` |
+| 2 | ☁️ Quark | 4K | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: xxxx |
+```
+
+**Rules**: Info always comes first, even when zero download links are found. Stars converted from average rating (8.5+ → ★★★★★, 7-8.5 → ★★★★☆, 5.5-7 → ★★★☆☆). `references/output-templates.md` has full templates for all media types.
 
 ## Custom Search Sources
 
