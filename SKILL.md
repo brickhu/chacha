@@ -43,6 +43,7 @@ Extract from the user's message:
 
 **Classification rules:**
 - If the input is `hot`, `new`, or `top` → **Discovery Mode**, show a ranked list of trending/newest/top-rated works
+- If the input is about search sources (e.g. "展示搜索源", "搜索源列表", "sources", "list sources", "查看源", "搜索源管理") → **Source List Mode**, show all configured search sources
 - If the input is a country/region name (e.g. "日本", "国产", "韩国", "美国", "UK", "France", "India", "泰国") → **Country Mode**, discover well-rated works from that country
 - If the input contains words like "director", "author", "works", "filmography", "bibliography", "导演", "作者", "作品", or is a known creator name → **Creator Mode**, show their works list
 - If the input contains anime-related keywords ("番剧", "动漫", "动画", "anime") or is a known anime title → **Anime Mode**, search as anime media type
@@ -95,6 +96,34 @@ What type of media are you looking for?
 ```
 
 Then proceed to Country Mode search (see Step 2).
+
+**Source List Mode** — Show all configured search sources:
+
+Run `bash scripts/search.sh --list-sources` which outputs pipe-delimited rows:
+```
+name|domain|path|mirrors|origin
+```
+
+Format the output as a readable table:
+
+```
+🔍 当前搜索源 (3 custom · 9 default)
+
+Custom (survives skill updates):
+  Name       | Domain       | Path                    | Mirrors
+  -----------|--------------|-------------------------|--------
+  动漫花园    | dmhy.org     | /search?q={query}       | —
+
+Default (shipped with skill):
+  Name       | Domain           | Path                          | Mirrors
+  -----------|------------------|-------------------------------|--------
+  bt4g       | bt4gpro.com      | /search?q={query}             | bt4g.org
+  bitsearch  | api.bitsearch.to | /api/search?q={query}         | —
+  cilixiong  | cilixiong.com    | /search?q={query}             | cilixiong.net, cilixiong.cc
+  ...
+```
+
+Separate custom and default sections. Mark `origin=custom` entries clearly so the user sees what they've added.
 
 ### Step 2: Parallel Search
 

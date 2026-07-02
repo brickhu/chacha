@@ -15,6 +15,47 @@ QUERY="${2:-}"
 UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
+
+# ─── List sources mode ──────────────────────────────────────────────────
+
+if [ "$SITE" = "--list-sources" ]; then
+  DOMAINS_FILE="$(dirname "$0")/domains.json"
+  CUSTOM_SOURCES="$HOME/.config/chacha/sources.json"
+  python3 -c "
+import json, os
+
+# Read defaults
+defaults = {}
+try:
+    with open('$DOMAINS_FILE') as f:
+        defaults = json.load(f).get('sources', {})
+except: pass
+
+# Read custom (overrides defaults)
+custom = {}
+custom_file = '$CUSTOM_SOURCES'
+if os.path.exists(custom_file):
+    try:
+        with open(custom_file) as f:
+            custom = json.load(f)
+    except: pass
+
+# Merge: custom overrides defaults
+all_sources = {}
+all_sources.update(defaults)
+all_sources.update(custom)
+
+# Output structured list
+for name, info in sorted(all_sources.items()):
+    domain = info.get('domain', '')
+    path = info.get('path', '/')
+    mirrors = info.get('mirrors', [])
+    origin = 'custom' if name in custom else ('default' if name in defaults else 'unknown')
+    print(f'{name}|{domain}|{path}|{\",\".join(mirrors)}|{origin}')
+" 2>/dev/null
+  exit 0
+fi
+
 [ -z "$SITE" ] && die "Usage: search.sh <seedhub|yts|1337x|quark|cilixiong|bt4g|bitsearch|nyaa> <query>"
 
 urlencode() {
