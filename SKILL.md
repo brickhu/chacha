@@ -125,6 +125,58 @@ Default (shipped with skill):
 
 Separate custom and default sections. Mark `origin=custom` entries clearly so the user sees what they've added.
 
+### Step 1.5: Search Cache
+
+Before running any searches, check `~/.config/chacha/search-cache.json` for a cached result.
+
+**Cache key**: normalize the query to lowercase, strip extra spaces, append media type and season if known:
+```
+interstellar_2014_movie
+黑镜_s01_tv
+進撃の巨人_anime
+```
+
+**Cache lookup logic:**
+```
+cache_file = ~/.config/chacha/search-cache.json
+if cache_file exists AND has entry for normalized key:
+    entry_age = now - entry.time
+    if entry_age < 86400 (24h):
+        output cached result and STOP — no searches needed
+    else:
+        stale entry — still show it as a quick preview, refresh in background
+```
+
+**On cache miss**: run all searches as normal, then save the complete output:
+```bash
+mkdir -p ~/.config/chacha
+python3 -c "
+import json, os, time
+file = os.path.expanduser('~/.config/chacha/search-cache.json')
+data = {}
+if os.path.exists(file):
+    with open(file) as f:
+        data = json.load(f)
+data['{normalized_key}'] = {
+    'time': int(time.time()),
+    'result': '''{complete_formatted_output}'''
+}
+with open(file, 'w') as f:
+    json.dump(data, f, indent=2)
+"
+```
+
+**Cache hit:**
+```
+⚡ Cached result from 3h ago
+
+(完整输出...)
+
+ℹ️ Results may be stale. Reply "刷新" to re-search.
+```
+
+**Cache expiry**: 24 hours. After that, treat as stale — show cached version but offer to refresh. If the user says "刷新" / "refresh" / "重新搜索", re-run searches and update cache.
+
 ### Step 2: Parallel Search
 
 #### Work Mode (info + downloads simultaneously)
@@ -394,8 +446,15 @@ Custom sources with the same key name as a default source **override** the defau
 
 ## Interaction Guide
 
+## Follow-up Actions
+
+After a search completes, the user can:
+- **Row number** (`"1"`, `"2"`) → copy link to clipboard or trigger download
+- **"刷新" / "refresh"** → re-run searches ignoring cache, update `search-cache.json`
+- **Season change** → switch to a different season for TV shows/anime
+- **New query** → start a fresh search
+
 See `references/interaction-guide.md` for:
-- Follow-up actions after search completes
 - CLI commands by platform (macOS / Linux / Windows)
 - Handling duplicate titles
 - Handling fuzzy input (Did You Mean?)
