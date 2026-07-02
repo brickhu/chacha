@@ -95,7 +95,23 @@ All user data lives in `~/.config/chacha/` — survives skill updates:
 
 ## Disclaimer
 
-Download resources are provided for **personal study/research only**. All copyrights belong to the original creators. Please support official releases.
+chacha is an open-source tool that aggregates publicly available information from the web. It does **not**:
+
+- Host, store, or distribute any copyrighted files
+- Operate any servers that store media content
+- Have any affiliation with the websites it searches
+
+All download links are sourced from third-party websites. chacha has no control over the content, availability, or legality of those links.
+
+Users are solely responsible for:
+
+- Complying with applicable copyright laws in their jurisdiction
+- Ensuring they only download content they have legal rights to access
+- Using downloaded content for personal study/research only
+
+The project maintainers assume no liability for how users interact with the third-party links discovered through this tool.
+
+If you are a copyright holder and believe this project facilitates access to your content, please open an issue on GitHub — we take such matters seriously.
 
 ## License
 
