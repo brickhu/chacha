@@ -125,39 +125,65 @@ Anime:
 - ☑ One-line plot summary
 - ☑ Episodes (for anime TV series: total episode count)
 
+**Season selection (TV Show / multi-season Anime only):**
+After info search confirms the show has 2+ seasons, ask the user which season to search:
+
+```
+📺 {title} has {N} seasons. Which one do you want?
+1. Season 1 ({year_start})
+2. Season 2 ({year_start+1})
+...
+N. All seasons (Complete Series)
+```
+
+Store the answer as `{season}` variable. For download searches:
+- If user picks a specific season → use `S{season:02d}` (e.g. S01, S05) in queries
+- If user picks "All seasons" → use `Complete Series` / `S01-S{N}`
+
+Proceed directly — don't wait for confirmation after selection.
+
 **Download searches (WebSearch + direct scraping, launched simultaneously):**
 
 > **Search Language Rules**: English `torrent` / `magnet` keywords trigger safety filters. Always use Chinese keywords for download searches.
 
-> **Title variables**: `{title}` = original input, `{title_en}` = English title, `{title_zh}` = Chinese title, `{title_jp}` = Japanese/romaji title (for anime). Anime searches should prefer `{title_jp}` or `{title_en}` on Nyaa.
+> **Title variables**: `{title}` = original input, `{title_en}` = English title, `{title_zh}` = Chinese title, `{title_jp}` = Japanese/romaji title (for anime). For TV Shows with a season selected, append `S{season:02d}` to the title (e.g. `"Black Mirror S01"`). For "All seasons", use `"Complete Series"` or `"S01-S{N}"`.
 
 **Tier 1 — Direct scraping (highest link quality, runs in parallel):**
+
+For TV Shows, append `{season}` (e.g. `S01`, `S05`, `Complete`) to the search query.
 ```
-bash scripts/search.sh cilixiong "{title}"       ← ⭐ cilixiong — Douban-rated movies, best link survival
-bash scripts/search.sh seedhub "{title_en}"      ← SeedHub — Douban-matched magnets
-bash scripts/search.sh yts "{title_en}"          ← YTS API — structured JSON with magnets
-bash scripts/search.sh 1337x "{title_en}"        ← 1337x — 4K resources
-bash scripts/search.sh bt4g "{title_en}"         ← ⭐ BT4G — DHT aggregator, millions of entries
-bash scripts/search.sh bitsearch "{title_en}"    ← ⭐ BitSearch — DHT aggregator API, structured data
-bash scripts/search.sh nyaa "{title_jp}"         ← ⭐ Nyaa — anime primary source, use Japanese/English title
-bash scripts/search.sh quark "{title_zh}"        ← Quark cloud drive
+bash scripts/search.sh cilixiong "{title} {season}"    ← ⭐ cilixiong — Douban-rated movies, best link survival
+bash scripts/search.sh seedhub "{title_en} {season}"   ← SeedHub — Douban-matched magnets
+bash scripts/search.sh yts "{title_en}"                ← YTS — movies only, skip for TV Shows
+bash scripts/search.sh 1337x "{title_en} {season}"     ← 1337x — 4K resources
+bash scripts/search.sh bt4g "{title_en} {season}"      ← ⭐ BT4G — DHT aggregator, millions of entries
+bash scripts/search.sh bitsearch "{title_en} {season}" ← ⭐ BitSearch — DHT aggregator API
+bash scripts/search.sh nyaa "{title_jp} {season}"      ← ⭐ Nyaa — anime primary source
+bash scripts/search.sh quark "{title_zh} {season}"     ← Quark cloud drive
 ```
 
 **Tier 2 — WebSearch fallback:**
+
+For TV Shows, append season keyword (e.g. `S01`, `第1季`, `Complete Series`) to each query.
 ```
-Movie/TV Show:
+Movie:
 - "{title_zh} site:cilixiong.com"                ← ⭐ search engine-cached cilixiong pages
-- "{title_zh} seedhub"
-- "{title_zh} bt4g"                              ← BT4G DHT aggregator
 - "{title_zh} {year} 磁力链接 BT下载 1080p"
 - "{title_zh} 夸克网盘"
-- "{title_zh} 阿里云盘"                           ← JS-rendered sites, WebSearch works better
+- "{title_zh} 阿里云盘"
+
+TV Show (append {season} to title):
+- "{title_zh} {season} site:cilixiong.com"
+- "{title_zh} {season} seedhub"
+- "{title_zh} {season} bt4g"
+- "{title_zh} {season} {year} 磁力链接 BT下载"
+- "{title_zh} {season} 夸克网盘"
 
 Anime:
-- "{title_jp} site:nyaa.si"                      ← ⭐ Nyaa search engine cache
-- "{title_en} site:nyaa.si"
-- "{title_zh} 番剧 BD 下载 1080p"                 ← Chinese anime sources
-- "{title_zh} 动漫 樱花"                          ← Chinese streaming mirrors
+- "{title_jp} {season} site:nyaa.si"             ← ⭐ Nyaa search engine cache
+- "{title_en} {season} site:nyaa.si"
+- "{title_zh} 番剧 BD 下载 1080p"
+- "{title_zh} 动漫 樱花"
 ```
 
 The scraping script `scripts/search.sh` uses `curl` with proper User-Agent to fetch pages directly and extract magnet/cloud links via perl/python3. It returns structured results faster than WebSearch.
