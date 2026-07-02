@@ -27,8 +27,9 @@ ENCODED=$(urlencode "$QUERY")
 
 DOMAINS_FILE="$(dirname "$0")/domains.json"
 DOMAINS_CACHE="/tmp/chacha-domains-cache.json"
+CUSTOM_SOURCES="$HOME/.config/chacha/sources.json"
 
-# Returns domain per line: 缓存域名(如有) → 硬编码域名 → 镜像
+# Returns domain per line: 自愈缓存 → 用户自定义源 → 硬编码默认源
 _resolve_domains() {
   local site="$1"
   python3 -c "
@@ -36,21 +37,37 @@ import json, os, sys
 
 cache_file = '$DOMAINS_CACHE'
 defaults_file = '$DOMAINS_FILE'
+custom_file = '$CUSTOM_SOURCES'
 site_key = '$site'
 output = []
 
-# 1) Read cache (AI-discovered domains)
+# 1) Self-healing cache (AI-discovered domains)
 if os.path.exists(cache_file):
     try:
         with open(cache_file) as f:
             cache = json.load(f)
         entry = cache.get(site_key, {})
         d = entry.get('domain', '')
-        if d:
+        if d and d not in output:
             output.append(d)
     except: pass
 
-# 2) Read defaults (shipped domains.json)
+# 2) User custom sources (~/.config/chacha/sources.json)
+#    Survives skill updates — user can add/modify sources via natural language
+if os.path.exists(custom_file):
+    try:
+        with open(custom_file) as f:
+            custom = json.load(f)
+    except: pass
+    src = custom.get(site_key, {})
+    d = src.get('domain', '')
+    if d and d not in output:
+        output.append(d)
+    for m in src.get('mirrors', []):
+        if m and m not in output:
+            output.append(m)
+
+# 3) Defaults (shipped domains.json)
 try:
     with open(defaults_file) as f:
         defaults = json.load(f)

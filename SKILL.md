@@ -317,6 +317,52 @@ Examples:
 
 See `references/output-templates.md` for the full output templates (movie, TV show, book, anime, creator works list, discovery list).
 
+## Custom Search Sources
+
+Users can add or modify search sources through natural language. These customizations are stored in `~/.config/chacha/sources.json` — outside the skill directory, so they survive skill updates.
+
+**How the AI handles "add source" requests:**
+
+When the user says something like:
+- "帮我加一个搜索源，叫动漫花园，域名 dmhy.org"
+- "把 bt4g 的域名改成 bt4g.life"
+- "添加一个新源，名字是 myanime，域名 myanime.me"
+
+The AI should:
+
+1. **Validate** the domain: `curl -sL --max-time 5 "https://{domain}" > /dev/null` — reject if unreachable
+2. **Infer the path**: if the site looks like a BT search engine, the path is likely `/search?q={query}`. Common patterns:
+   - `/{query}` (path-based search)
+   - `/search?q={query}` (query param)
+   - `/search?keyword={query}`
+3. **Write** to `~/.config/chacha/sources.json`:
+   ```bash
+   mkdir -p ~/.config/chacha
+   python3 -c "
+   import json, os
+   file = os.path.expanduser('~/.config/chacha/sources.json')
+   data = {}
+   if os.path.exists(file):
+       with open(file) as f:
+           data = json.load(f)
+   data['{source_name}'] = {
+       'domain': '{domain}',
+       'mirrors': [],
+       'path': '{path}'
+   }
+   with open(file, 'w') as f:
+       json.dump(data, f, indent=2)
+   "
+   ```
+4. **Confirm** to the user: "已添加搜索源 `{name}` ({domain})，下次搜索自动生效"
+
+**Merge priority** (highest to lowest):
+1. `/tmp/chacha-domains-cache.json` — AI self-healing cache
+2. `~/.config/chacha/sources.json` — user custom sources
+3. `scripts/domains.json` — shipped defaults
+
+Custom sources with the same key name as a default source **override** the default (e.g. `"bt4g": {"domain": "bt4g.life"}` replaces the shipped bt4g entry).
+
 ## Interaction Guide
 
 See `references/interaction-guide.md` for:
