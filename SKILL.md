@@ -43,6 +43,7 @@ Extract from the user's message:
 
 **Classification rules:**
 - If the input is `hot`, `new`, or `top` → **Discovery Mode**, show a ranked list of trending/newest/top-rated works
+- If the input is about discovering new sources (e.g. "discover sources", "发现新源", "搜索源发现", "找新磁力站") → **Source Discovery Mode**, find and validate new search sources
 - If the input is about search sources (e.g. "展示搜索源", "搜索源列表", "sources", "list sources", "查看源", "搜索源管理") → **Source List Mode**, show all configured search sources
 - If the input is a country/region name (e.g. "日本", "国产", "韩国", "美国", "UK", "France", "India", "泰国") → **Country Mode**, discover well-rated works from that country
 - If the input contains words like "director", "author", "works", "filmography", "bibliography", "导演", "作者", "作品", or is a known creator name → **Creator Mode**, show their works list
@@ -124,6 +125,80 @@ Default (shipped with skill):
 ```
 
 Separate custom and default sections. Mark `origin=custom` entries clearly so the user sees what they've added.
+
+**Source Discovery Mode** — Find and validate new search sources:
+
+Triggered by: `/chacha discover sources`, `/chacha 发现新源`, `/chacha 找新磁力站`
+
+Flow:
+
+1. **WebSearch for candidates** — run multiple queries in parallel:
+   ```
+   "2026 最新磁力搜索引擎 推荐"
+   "best torrent search engines 2026"
+   "new BT sites 2026 working"
+   "最新磁力站 2026 可用"
+   ```
+
+2. **Filter candidates** — for each potential source found in results:
+   - Extract domain name
+   - Skip if already in `~/.config/chacha/sources.json`
+   - Skip known dead sites, SEO spam, forum posts, social media links
+   - Keep only actual search-engine-style sites
+
+3. **Validate** — for each candidate domain:
+   ```bash
+   curl -sL --max-time 5 "https://{domain}" -o /dev/null -w "%{http_code}"
+   # Must return 200/301/302, not Cloudflare challenge, not empty
+   ```
+
+4. **Infer search path** — test common URL patterns:
+   ```bash
+   for path in "/search?q=test" "/?q=test" "/search/test" "/s/test"; do
+     code=$(curl -sL --max-time 5 "https://{domain}${path}" -o /dev/null -w "%{http_code}")
+     if [ "$code" != "404" ]; then
+       echo "Likely path: ${path}"
+       break
+     fi
+   done
+   ```
+   Fallback if none match: `/search?q={query}` (most common for BT sites)
+
+5. **Add validated sources** to `~/.config/chacha/sources.json`:
+   ```bash
+   python3 -c "
+   import json, os
+   file = os.path.expanduser('~/.config/chacha/sources.json')
+   with open(file) as f:
+       data = json.load(f)
+   data['sources']['{source_name}'] = {
+       'domain': '{domain}',
+       'mirrors': [],
+       'path': '{inferred_path}'
+   }
+   with open(file, 'w') as f:
+       json.dump(data, f, indent=2)
+   "
+   ```
+
+6. **Report** to the user:
+   ```
+   🔍 Source discovery complete
+
+   ✅ Added (3):
+     anidb.net       | /search?q={query}     | anime database
+     btsow.com       | /search?q={query}     | DHT aggregator
+     torrentz2.eu    | /search?q={query}     | meta-search
+
+   ⏭️  Skipped — already configured (6):
+     bt4g, bitsearch, nyaa, 1337x, seedhub, cilixiong
+
+   ❌ Failed validation (2):
+     xxx.example.com — connection timeout
+     yyy.example.com — Cloudflare challenge
+   ```
+
+7. **Offer to test**: "New sources are saved. Run `/chacha 星际穿越` to test them."
 
 ### Step 1.5: Search Cache
 
