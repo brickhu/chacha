@@ -113,6 +113,69 @@
 
 ---
 
+### 🎨 番剧 / Anime
+
+#### 轮次 1 — 基本信息 + 评分（并行 4 个搜索）
+
+```
+搜索 1 (MyAnimeList):
+"{title_jp}" "{title_en}" MyAnimeList rating episodes studio
+
+搜索 2 (Bangumi / 豆瓣):
+"{title_zh}" 番剧 Bangumi 评分 声优
+
+搜索 3 (AniList / ANN):
+"{title_en}" AniList Anime News Network review
+
+搜索 4 (基本信息):
+"{title_en}" anime episodes studio cast season year
+```
+
+#### 轮次 1 特有注意事项
+
+- **MyAnimeList (MAL)** 是番剧评分首选，评分格式为「X.XX」
+- **Bangumi** 是中文番剧评分首选，评分格式为「X.X」
+- **Studio**（动画制作公司）是番剧信息的重要组成部分，类似电影的导演
+- **声优 (voice actors)** 应列为主要卡司，使用 🎤 前缀
+- **季度信息**：确认属于哪个播出季（2024年春/夏/秋/冬），影响资源命名
+- **集数**：标注总集数，区分 TV 版与 OVA/剧场版
+
+#### 轮次 2 — 下载资源（用户确认后）
+
+```
+搜索 1 (Nyaa — 首选):
+"{title_jp}" "{title_en}" site:nyaa.si
+
+搜索 2 (全集/BD):
+"{title_en}" BD batch torrent magnet
+"{title_jp}" BD 合集 ダウンロード
+
+搜索 3 (中文源):
+"{title_zh}" 番剧 下载 1080p 磁力
+"{title_zh}" BDrip 合集
+```
+
+#### 搜索结果解析要点
+
+- **压制组**: Nyaa 上同一资源可能有多个压制组（SubsPlease, Erai-raws, Judas, AnimeKaizoku 等），优先选择 Seeds 最高且质量口碑好的
+- **格式偏好**: HEVC/x265 10bit 是番剧主流高质量格式，体积比 x264 小约 30-50%
+- **字幕**: Nyaa 上的 raw 通常不带字幕，需额外找字幕组版或外挂字幕
+- **合集 (Batch)**: 完整番剧通常以「Batch」形式发布，包含所有剧集
+- **剧场版**: 按「电影」处理，但搜索源用 Nyaa 而非其他 BT 站
+- **BD vs TV**: BD 版画质更好、修正了 TV 版的作画失误，优先选择 BD
+
+#### 番剧特有降级策略
+
+当 Nyaa 无结果时：
+
+```
+第一级: Nyaa 换标题语言（英 ↔ 日）
+第二级: WebSearch "{title_zh} 番剧 网盘"
+第三级: WebSearch "{title_zh} 动漫 樱花 在线"     ← 樱花是常见番剧镜像站
+```
+
+---
+
 ### 📚 图书
 
 #### 轮次 1 — 基本信息 + 评分（并行 3-4 个搜索）

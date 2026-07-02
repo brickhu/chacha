@@ -129,7 +129,7 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:{ISBN}&key={KEY}
 | **YTS** | yts.mx | 小体积高清电影，1080p仅1-3GB |
 | **The Pirate Bay** | thepiratebay.org | 全球种子最全 |
 | **TorrentGalaxy** | torrentgalaxy.to | 更新快，含IMDb评分 |
-| **Nyaa** | nyaa.si | ⭐ 动漫首选，按种子数排序。`scripts/search.sh nyaa` |
+| **Nyaa** | nyaa.si | ⭐⭐ **番剧/动漫首选源**，按种子数排序。搜日文或英文名。`scripts/search.sh nyaa` |
 | **Knaben** | knaben.org | 显示种子健康度 |
 
 ##### BT4G 抓取说明
@@ -156,9 +156,27 @@ API: https://api.bitsearch.to/api/search?q={query}
 
 ```
 搜索页: https://nyaa.si/?q={query}&s=seeders&o=desc (按做种数排序)
+适用: 番剧 / 动漫 / 剧场版动画
+注意: 必须用英/日文标题搜，中文标题几乎无命中
 策略: curl 搜索页 → python3 解析表格行提取 magnet + seeds + leechers
 输出: "magnet | seeds:N | leechers:N" 格式
 ```
+
+#### 🎨 番剧 / Anime 专属源
+
+| 来源 | 说明 |
+|------|------|
+| **Nyaa** (nyaa.si) | ⭐⭐ **番剧首选**。需搜日文/英文名，中文名基本命中不了。按种子数排序 |
+| **AniDex** (anidex.info) | 备用，索引较全 |
+| **Tokyo Toshokan** (tokyotosho.info) | 老牌，部分 Nyaa 不收录的资源在这里 |
+| **动漫花园** (dmhy.org) | 中文番剧社区，种子带字幕 |
+| **蜜柑计划** (mikanani.me) | RSS 订阅型，资源更新快，中文资源多 |
+
+**搜索提示：**
+- Nyaa 必须用英文/日文标题搜，中文标题几乎无结果
+- 番剧压制组推荐：SubsPlease (画质+体积平衡)、Erai-raws (体积小)、Judas (高画质)
+- 合集 (Batch) 优先于单集下载
+- 格式：HEVC/x265 10bit 是主流，部分老番只有 x264
 
 #### MCP 工具（优先使用）
 
@@ -190,8 +208,13 @@ API: https://api.bitsearch.to/api/search?q={query}
 # 剧集合集
 "{title} complete S01-S{N} 1080p torrent"
 
-# 动漫
-"{title} {year} 动漫 1080p 磁力"
+# 🎨 番剧 / Anime
+"{title_jp} site:nyaa.si"                    ← ⭐⭐ Nyaa 搜索（日文名）
+"{title_en} site:nyaa.si"                    ← Nyaa 英文名搜索
+"{title_zh} 番剧 BD 下载"                     ← 中文番剧资源
+"{title_zh} 动漫花园"                          ← 中文动漫社区
+"{title_jp} batch 1080p torrent"              ← 日文全集搜索
+"{title_zh} {year} 动漫 1080p 磁力"
 ```
 
 ### 网盘资源

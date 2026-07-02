@@ -42,13 +42,17 @@ Extract from the user's message:
 
 **Classification rules:**
 - If the input is `hot`, `new`, or `top` → **Discovery Mode**, show a ranked list of trending/newest/top-rated works
+- If the input is a country/region name (e.g. "日本", "国产", "韩国", "美国", "UK", "France", "India", "泰国") → **Country Mode**, discover well-rated works from that country
 - If the input contains words like "director", "author", "works", "filmography", "bibliography", "导演", "作者", "作品", or is a known creator name → **Creator Mode**, show their works list
+- If the input contains anime-related keywords ("番剧", "动漫", "动画", "anime") or is a known anime title → **Anime Mode**, search as anime media type
 - Otherwise → **Work Mode**, search for a single work directly
 
 **Work Mode** — continue parsing:
 - **Title** (required)
 - **Year** (optional, for exact matching)
-- **Media type** (movie / TV show / book)
+- **Media type** (movie / TV show / book / anime)
+
+**Auto-detect anime**: If the title is a known anime (e.g. "进击的巨人", "鬼灭之刃", "Naruto", "One Piece") or the user explicitly says "番剧" / "动漫" / "anime", set media type to `anime` without asking.
 
 If the media type is ambiguous, use `AskUserQuestion` (in the user's language):
 ```
@@ -56,11 +60,12 @@ What type of media is this?
 - 🎬 Movie
 - 📺 TV Show
 - 📚 Book
+- 🎨 Anime
 ```
 
 **Creator Mode** — continue parsing:
 - **Creator name** (required)
-- **Field**: Film director / Author (infer from context if possible; otherwise ask)
+- **Field**: Film director / Author / Anime director / Mangaka (infer from context if possible; otherwise ask)
 
 **Discovery Mode** — continue parsing:
 
@@ -71,9 +76,24 @@ What type of media are you looking for?
 - 🎬 Movie
 - 📺 TV Show
 - 📚 Book
+- 🎨 Anime
 ```
 
 Then proceed to Discovery Mode search (see Step 2).
+
+**Country Mode** — continue parsing:
+
+The user input is a country/region name (e.g. "日本", "国产", "韩国", "美国"). First, ask what type of media they're interested in (in the user's language):
+
+```
+What type of media are you looking for?
+- 🎬 Movie
+- 📺 TV Show
+- 📚 Book
+- 🎨 Anime
+```
+
+Then proceed to Country Mode search (see Step 2).
 
 ### Step 2: Parallel Search
 
@@ -83,23 +103,32 @@ Launch all searches in parallel. **Never wait for info results before searching 
 
 **Info searches (2-3):**
 ```
+Movie/TV Show:
 - "{title} {year} IMDb rating cast director plot"    ← cast/actors is mandatory
 - "{title} {year} 主演 演员 豆瓣评分"                  ← for Chinese cast names
 - "{title} {year} Rotten Tomatoes score review"       ← optional, as needed
+
+Anime:
+- "{title} {year} MyAnimeList rating anime review"    ← MAL is primary anime rating source
+- "{title} 动漫 评分 豆瓣 Bangumi"                     ← Chinese anime rating platforms
+- "{title} AniList rating synopsis"                    ← optional, as needed
 ```
 
 **Info extraction checklist:**
 - ☑ Title (original + localized)
-- ☑ Year + runtime
-- ☑ Director
-- ☑ **Main cast** (at least top 3-5 actors, with role names if available)
-- ☑ Ratings (IMDb + Douban minimum)
+- ☑ Year / Season (for anime: e.g. "Spring 2024")
+- ☑ Director / Studio (for anime: include animation studio)
+- ☑ **Main cast** (at least top 3-5 actors / voice actors, with role names if available)
+- ☑ Ratings (IMDb + Douban minimum; for anime: MyAnimeList + Bangumi)
 - ☑ Genre tags
 - ☑ One-line plot summary
+- ☑ Episodes (for anime TV series: total episode count)
 
 **Download searches (WebSearch + direct scraping, launched simultaneously):**
 
 > **Search Language Rules**: English `torrent` / `magnet` keywords trigger safety filters. Always use Chinese keywords for download searches.
+
+> **Title variables**: `{title}` = original input, `{title_en}` = English title, `{title_zh}` = Chinese title, `{title_jp}` = Japanese/romaji title (for anime). Anime searches should prefer `{title_jp}` or `{title_en}` on Nyaa.
 
 **Tier 1 — Direct scraping (highest link quality, runs in parallel):**
 ```
@@ -109,18 +138,25 @@ bash scripts/search.sh yts "{title_en}"          ← YTS API — structured JSON
 bash scripts/search.sh 1337x "{title_en}"        ← 1337x — 4K resources
 bash scripts/search.sh bt4g "{title_en}"         ← ⭐ BT4G — DHT aggregator, millions of entries
 bash scripts/search.sh bitsearch "{title_en}"    ← ⭐ BitSearch — DHT aggregator API, structured data
-bash scripts/search.sh nyaa "{title_en}"         ← Nyaa — anime torrents
+bash scripts/search.sh nyaa "{title_jp}"         ← ⭐ Nyaa — anime primary source, use Japanese/English title
 bash scripts/search.sh quark "{title_zh}"        ← Quark cloud drive
 ```
 
 **Tier 2 — WebSearch fallback:**
 ```
+Movie/TV Show:
 - "{title_zh} site:cilixiong.com"                ← ⭐ search engine-cached cilixiong pages
 - "{title_zh} seedhub"
 - "{title_zh} bt4g"                              ← BT4G DHT aggregator
 - "{title_zh} {year} 磁力链接 BT下载 1080p"
 - "{title_zh} 夸克网盘"
 - "{title_zh} 阿里云盘"                           ← JS-rendered sites, WebSearch works better
+
+Anime:
+- "{title_jp} site:nyaa.si"                      ← ⭐ Nyaa search engine cache
+- "{title_en} site:nyaa.si"
+- "{title_zh} 番剧 BD 下载 1080p"                 ← Chinese anime sources
+- "{title_zh} 动漫 樱花"                          ← Chinese streaming mirrors
 ```
 
 The scraping script `scripts/search.sh` uses `curl` with proper User-Agent to fetch pages directly and extract magnet/cloud links via perl/python3. It returns structured results faster than WebSearch.
@@ -167,6 +203,11 @@ TV Show:
 - "{year} 热门剧集 排行榜 豆瓣"
 - "{year} most {popular|anticipated|rated} TV series Rotten Tomatoes"
 
+Anime:
+- "{year} best anime {hot|new|top} MyAnimeList ranking"
+- "{year} 热门番剧 排行榜 Bangumi"
+- "{season} anime ranking new series"              ← e.g. "spring 2025 anime ranking"
+
 Book:
 - "{year} best books {hot|new|top} Goodreads"
 - "{year} 热门图书 排行榜 豆瓣"
@@ -181,6 +222,32 @@ Book:
 | `top` | All-time highest rated | "排行榜", "top rated", "best of all time" |
 
 Display **50 items** in a compact ranked table. See `references/output-templates.md` for the discovery list template.
+
+#### Country Mode
+
+Same as Discovery Mode, but filtered by country. The country name (e.g. "日本", "韩国", "France") is injected into search queries to focus on works from that region.
+
+**Search queries (run in parallel):**
+```
+Movie:
+- "best {country} movies {hot|new|top} IMDb ranking"
+- "{country} 电影 排行榜 豆瓣"
+- "{country} films Rotten Tomatoes top rated"
+
+TV Show:
+- "best {country} TV shows {hot|new|top} IMDb ranking"
+- "{country} 剧集 排行榜 豆瓣"
+
+Anime (when country is Japan):
+- "best anime {hot|new|top} MyAnimeList ranking"
+- "日本 番剧 排行榜 Bangumi"
+
+Book:
+- "best {country} books {hot|new|top} Goodreads"
+- "{country} 图书 排行榜 豆瓣"
+```
+
+Display **50 items** in a compact ranked table.
 
 ### Step 3: Validate & Aggregate
 
@@ -202,6 +269,7 @@ Mark checked links with status: ✅ Valid / ⚠️ Suspect / ❌ Dead
 
 - 🎬 **Movie**: Hook from plot premise, directorial style, or standout cast. *Not* generic praise.
 - 📺 **TV Show**: Hook from premise, critical buzz, or binge-worthiness.
+- 🎨 **Anime**: Hook from animation studio, director, unique premise, or cultural impact.
 - 📚 **Book**: Hook from theme, writing style, or why it resonates.
 
 Examples:
@@ -216,7 +284,7 @@ Examples:
 
 **Core rule: Info is compact and front-loaded. Download links are the main content.** Info header (title, ratings, cast, plot, highlight) takes 4-5 lines. Download resources take 80%+ of the output. Links must be directly copyable — full magnet strings, cloud links with extraction codes. Every link must pass validity check before display (✅/⚠️/❌).
 
-See `references/output-templates.md` for the full output templates (movie, TV show, book, creator works list, discovery list).
+See `references/output-templates.md` for the full output templates (movie, TV show, book, anime, creator works list, discovery list).
 
 ## Interaction Guide
 
@@ -231,13 +299,13 @@ See `references/interaction-guide.md` for:
 1. **Disclaimer**: Download sections must include a "for personal study/research only" notice
 2. **Data authenticity**: All ratings, cast, and info must come from search results. Never fabricate
 3. **Validity check**: Cloud/HTTP links → HEAD request. Magnet links → hash format check. Mark all links ✅/⚠️/❌
-4. **Cast is mandatory**: Always list 3-5 main actors with 🎭 prefix. Search `{title} 主演 演员` for Chinese names
+4. **Cast is mandatory**: Always list 3-5 main actors with 🎭 prefix. Search `{title} 主演 演员` for Chinese names. For anime, list voice actors (声优) with 🎤
 5. **Highlight must be specific**: One tailored sentence per work. Never copy-paste generic praise
 6. **Deduplication**: Remove duplicate resources across sources (by file size, magnet hash)
 7. **Quality sorting**: Valid links first (✅), then by quality. Expired (❌) at bottom
 8. **Books disclaimer**: Ebook availability is far lower than video. Manage user expectations upfront
 9. **Freshness**: Default to using the current year to help filter out stale resources
-10. **cilixiong.com first**: Always try 磁力熊 as the primary download source — highest link quality and survival rate
+10. **Anime source priority**: For anime, try Nyaa (nyaa.si) first as primary source, fall back to general BT/cloud sources. Always search by English or Japanese title on Nyaa
 
 ## References
 

@@ -9,81 +9,125 @@ Info is compact and front-loaded. Download links are the main content. Basic inf
 ## Movie Output Template
 
 ```markdown
-# 🎬 {Title} ({Original Title}) · {year} · {director} · {runtime}
-> IMDb **{rating}** · Douban **{rating}** · Rotten Tomatoes **{score}%** · {genres}
-> 🎭 {Actor1} / {Actor2} / {Actor3} / {Actor4} / {Actor5}
->
-> {One-line plot summary, max two lines}
->
-> 🔥 **看点**：{One compelling sentence — what makes THIS movie unmissable}
+# 🎬 星际穿越 Interstellar
+* **导演**: Christopher Nolan · 2014 · USA/UK · 169min
+* **主演**: 马修·麦康纳 / 安妮·海瑟薇 / 杰西卡·查斯坦 / 迈克尔·凯恩 / 卡西·阿弗莱克
+* **评分**: ★ ★ ★ ★ ★ ｜ IMDb 8.7 · 豆瓣 9.4 · RT 86%/91%
+
+一队探险者穿越虫洞，为人类寻找新家园。
+
+> 🔥 Nolan uses entropy reversal to tell a spy thriller where time itself is the ultimate villain.
 
 ## 🔗 Download Resources
 
 > ⚠️ For personal study/research only. Copyright belongs to the original creators.
 
-| # | Type | Quality | Size | Status | Link | Code |
-|---|------|---------|------|--------|------|------|
-| 1 | 🧲 Magnet | 4K HDR | 22GB | ✅ | `magnet:?xt=urn:btih:...` 🔗 | — |
-| 2 | 🧲 Magnet | 1080p | 8GB | ✅ | `magnet:?xt=urn:btih:...` 🔗 | — |
-| 3 | ☁️ Quark | 4K REMUX | 80GB | ✅ | `https://pan.quark.cn/s/xxxx` 🔗 | `xxxx` |
-| 4 | ☁️ Baidu | 1080p | 7GB | ❌ 已失效 | — | — |
+| # | Type | Quality | Size | Seeds | Status | Link |
+|---|------|---------|------|-------|--------|------|
+| 1 | 🧲 Magnet | 4K HDR | 22GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` |
+| 2 | 🧲 Magnet | 1080p | 8GB | 3200 | ✅ | `magnet:?xt=urn:btih:...` |
+| 3 | ☁️ Quark | 4K REMUX | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 4 | ☁️ Baidu | 1080p | 7GB | — | ❌ | — |
 
 💡 For archiving: REMUX/BluRay. For daily watching: 1080p ~8GB is enough.
 ```
 
-**Key requirements:**
-- 🎭 **Cast line**: List 3-5 main actors, separated by ` / `. Use localized names matching the user's language
-- 🔥 **看点**: One unique, compelling sentence tailored to this specific work. Never generic. Lead with director style, plot hook, or standout element
-- **Status column**: ✅ 有效 / ⚠️ 疑似失效 / ❌ 已失效 — based on HEAD request or magnet format check
-- Single unified table. **Type** column distinguishes: 🧲 Magnet / ☁️ Quark / ☁️ Baidu / ☁️ Ali
-- **Link** column shows the URL followed by 🔗. User just says the row number ("1") → you execute `echo "<link>" | pbcopy` immediately
-- Cloud drive links use full `https://` URLs. Magnet links use full `magnet:?xt=urn:btih:` URIs
-- Sort: valid links first (✅), then magnet by quality, then cloud drives. Expired links (❌) at bottom
-- Never fabricate links
+**Star conversion (approximate from average of available ratings):**
+| Score | Stars |
+|-------|-------|
+| 0-4 | ★☆☆☆☆ |
+| 4-5.5 | ★★☆☆☆ |
+| 5.5-7 | ★★★☆☆ |
+| 7-8.5 | ★★★★☆ |
+| 8.5-10 | ★★★★★ |
+
+**Key rules:**
+- * bullet points — each is one line, no wrapping
+- **导演** line = director · year · region · runtime — all compact, no label repeats
+- **评分** line = stars ｜ platform1 rating · platform2 rating · platform3 rating
+- Plot summary: plain text, no prefix/icon
+- Highlight: `> 🔥` blockquote style, no "看点：" label when responding in English
 
 ---
 
 ## TV Show Output Template
 
 ```markdown
-# 📺 {Title} ({Original Title}) · {year} · {seasons} seasons · {status}
-> IMDb **{rating}** · Douban **{rating}** · {creator} · {network}
-> 🎭 {Actor1} / {Actor2} / {Actor3} / {Actor4} / {Actor5}
->
-> {One-line plot summary}
->
-> 🔥 **看点**：{One compelling sentence — the hook that makes this series binge-worthy}
+# 📺 权力的游戏 Game of Thrones
+* **导演**: David Benioff, D.B. Weiss · 2011-2019 · USA · 8 seasons (73 eps)
+* **主演**: 艾米莉亚·克拉克 / 基特·哈灵顿 / 彼特·丁拉基 / 琳娜·海蒂 / 尼可拉·科斯特-瓦尔道
+* **评分**: ★ ★ ★ ★ ☆ ｜ IMDb 9.2 · 豆瓣 9.3 · RT 89%/87%
+
+七大王国的贵族争夺铁王座，而北方真正的威胁正在逼近。
+
+> 🔥 Not the throne you should fear — winter is coming, and it brings the franchise's most ambitious television ever made.
 
 ## 🔗 Download Resources
 
-| # | Type | Scope | Quality | Size | Status | Link | Code |
-|---|------|------|------|------|--------|------|------|
-| 1 | 🧲 Magnet | S01-S{N} Complete | 1080p | 42GB | ✅ | `magnet:?xt=urn:btih:...` 🔗 | — |
-| 2 | ☁️ Quark | Complete | 1080p | 42GB | ✅ | `https://pan.quark.cn/s/xxxx` 🔗 | `xxxx` |
+> ⚠️ For personal study/research only.
 
- ⚠️ For personal study/research only.
+| # | Type | Scope | Quality | Size | Seeds | Status | Link |
+|---|------|-------|---------|------|-------|--------|------|
+| 1 | 🧲 Magnet | Complete Series | 1080p | 142GB | 2800 | ✅ | `magnet:?xt=urn:btih:...` |
+| 2 | 🧲 Magnet | S01-S04 | 1080p | 48GB | 1200 | ✅ | `magnet:?xt=urn:btih:...` |
+| 3 | ☁️ Quark | Complete | 1080p | 142GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
 ```
+
+---
+
+## Anime Output Template
+
+```markdown
+# 🎨 進撃の巨人 Attack on Titan
+* **导演**: 荒木哲郎 · WIT Studio → MAPPA · 2013-2023 · 94 eps (4 seasons)
+* **声优**: 梶裕贵 / 石川由依 / 井上麻里奈 / 小野大辅 / 神谷浩史
+* **评分**: ★ ★ ★ ★ ★ ｜ MyAnimeList 8.5 · Bangumi 8.1 · IMDb 9.0
+
+巨人支配的世界中，少年艾伦为夺回自由而战。
+
+> 🔥 No other anime has deconstructed freedom, morality, and cycle of hatred with this much ambition.
+
+## 🔗 Download Resources
+
+> ⚠️ For personal study/research only.
+
+| # | Type | Scope | Quality | Size | Seeds | Status | Link |
+|---|------|-------|---------|------|-------|--------|------|
+| 1 | 🧲 Magnet | Batch | 1080p HEVC 10bit | 36GB | 4500 | ✅ | `magnet:?xt=urn:btih:...` |
+| 2 | 🧲 Magnet | Batch | 720p x264 | 18GB | 1800 | ✅ | `magnet:?xt=urn:btih:...` |
+| 3 | ☁️ Quark | Complete | 1080p | 36GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+
+💡 **Batch** = complete series. HEVC 10bit is the standard (better quality, smaller size).
+```
+
+**Key differences:**
+- **声优** instead of **主演** for voice actors
+- Director line includes studio (no separate label)
+- MyAnimeList + Bangumi as primary ratings
 
 ---
 
 ## Book Output Template
 
 ```markdown
-# 📚 {Title} ({Original Title}) · {author} · {year} · {publisher}
-> Goodreads **{rating}** · Douban **{rating}** · ISBN: {ISBN}
->
-> {One-line summary}
->
-> 🔥 **看点**：{One compelling sentence — the idea, style, or insight that makes this book worth reading}
+# 📚 三体 The Three-Body Problem
+* **作者**: 刘慈欣 · 2006 · China · 重庆出版社
+* **评分**: ★ ★ ★ ★ ☆ ｜ Goodreads 4.4 · 豆瓣 8.9 · Google Books 4.5
+
+一名科学家在文革期间向宇宙发送信号，引来三体文明的入侵威胁。
+
+> 🔥 Liu Cixin turns the Fermi paradox into the most ambitious hard sci-fi epic of the 21st century.
 
 ## 🔗 Download Resources
 
 > ⚠️ For personal study/research only.
 
-| # | Type | Format | Size | Status | Link | Code |
-|---|------|------|------|--------|------|------|
-| 1 | ☁️ Quark | EPUB | 2MB | ✅ | `https://pan.quark.cn/s/xxxx` 🔗 | `xxxx` |
-| 2 | ☁️ Baidu | PDF | 5MB | ❌ 已失效 | — | — |
+| # | Type | Format | Size | Status | Link |
+|---|------|--------|------|--------|------|
+| 1 | ☁️ Quark | EPUB | 2MB | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 2 | ☁️ Baidu | PDF | 5MB | ❌ | — |
+
+💡 EPUB recommended for most readers. PDF for fixed-layout content.
 ```
 
 ---
