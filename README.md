@@ -8,26 +8,16 @@
 
 chacha is an AI resource search assistant. You tell it what you want to watch or read — it browses resource sites and search platforms in parallel, extracts download links, verifies they're alive, and returns ready-to-copy magnets and cloud drive URLs.
 
-## Why not just use a search engine?
+## Why chacha?
 
-| Task | Search Engine | chacha |
-|------|--------------|--------|
-| Find a download link | Returns web pages, you click around | Extracts `magnet:` links directly |
-| Link alive? | You find out after clicking | ✅ HEAD-verified before output |
-| Quality info | 2-3 extra tabs (IMDb, Douban, RT) | Included in one message |
-| Multiple sources | Search again per source | 9 sources in parallel |
-| Dead domain | You wait for site to come back | AI auto-discovers new domain |
+Search engines give you *web pages*. BT sites give you *one site's index*. chacha gives you *validated download links* — skipping the search → click → detail page → copy → find dead link loop.
 
-Search engines are great at finding *websites*. chacha is purpose-built for finding *download links*.
-
-## Why not just use a BT site?
-
-BT sites list every uploaded torrent — chacha does the work for you:
-
-- **No browsing**: skips the search → click → detail page → copy magnet flow
-- **No dead links**: validates cloud drive URLs before you see them
-- **Cross-source**: queries 9 sources at once, not one at a time
-- **Self-healing**: when a site changes domain, AI finds the new one automatically
+| vs. Search Engines | vs. BT Sites |
+|---|---|
+| Extracts `magnet:` links directly, not web pages | Queries 9 sources in parallel, not one at a time |
+| Verifies cloud drive links before you see them | Skips detail page drill-down — links are front and center |
+| Bundles ratings, cast, plot in one message | Auto-discovers new domains when sites go down |
+| Search engines find *websites*. chacha finds *download links*. | BT sites list *torrents*. chacha gives you *working links*.
 
 ## What you can search
 
