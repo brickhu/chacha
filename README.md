@@ -65,6 +65,14 @@ npx skills add brickhu/chacha
 
 Then in your AI harness (Claude Code, Codex, Cursor, Windsurf, Cline, Trae):
 
+### Manual Install
+
+Download the latest release and upload it to your AI client:
+
+```bash
+curl -L -o chacha.zip https://github.com/brickhu/chacha/archive/refs/heads/master.zip
+```
+
 ```
 /chacha Interstellar
 /chacha 星际穿越
