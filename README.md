@@ -6,7 +6,7 @@
 [![skills.sh](https://img.shields.io/badge/skills.sh-chacha-38bdae)](https://skills.sh/brickhu/chacha)
 [English](./README.md) | [中文](./README_cn.md)
 
-chacha is an AI-powered resource discovery agent for **movies, TV shows, and books**. Three core capabilities:
+chacha is an AI-powered resource search assistant for **movies, TV shows, and books**. Three core capabilities:
 
 ## 1. 提取有效链接
 
