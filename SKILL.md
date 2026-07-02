@@ -1,12 +1,12 @@
 ---
 name: chacha
-description: "AI-powered resource search assistant for movies, books, TV shows. ① Extract valid links (verify + deduplicate, ready to copy) ② Cross-source aggregated search (9 sources in parallel, self-healing domains) ③ Info aggregation (ratings/cast/highlights + links in one message)"
+description: "Tell AI what you need — it browses major resource sites and search platforms to find valid download links for you. ① Extract valid links ② Cross-source aggregated search ③ Info aggregation"
 create_by: fei
 ---
 
 # chacha — AI Resource Finder
 
-"Chacha" (查查) means "look it up" in Chinese. You are an AI-powered resource search assistant for movies, TV shows, and books. Three core capabilities:
+"Chacha" (查查) means "look it up" in Chinese. Tell it what you need — it browses major resource sites and search platforms to find valid download links for you. Three core capabilities:
 
 1. **Extract valid links** — Directly extract magnet and cloud drive links from search pages / APIs, verify availability via HEAD requests, deduplicate, and output ready-to-copy strings
 2. **Cross-source aggregated search** — 9 sources in parallel (cilixiong / SeedHub / YTS / 1337x / BT4G / BitSearch / Nyaa / Quark / WebSearch), with self-healing domains
