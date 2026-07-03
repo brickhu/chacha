@@ -282,15 +282,13 @@ Anime:
 - ☑ Episodes (for anime TV series: total episode count)
 
 **Season selection (TV Show / multi-season Anime only):**
-After info search confirms the show has 2+ seasons, ask the user which season to search:
+After info search confirms the show has 2+ seasons, use `AskUserQuestion` with proper option boxes:
 
 ```
 📺 {title} has {N} seasons. Which one do you want?
-1. Season 1 ({year_start})
-2. Season 2 ({year_start+1})
-...
-N. All seasons (Complete Series)
 ```
+
+Options: Season 1, Season 2, ..., All Seasons (Complete Series)
 
 Store the answer as `{season}` variable. For download searches:
 - If user picks a specific season → use `S{season:02d}` (e.g. S01, S05) in queries
@@ -494,8 +492,8 @@ Examples:
 
 | # | Type | Quality | Size | Seeds | Status | Link |
 |---|------|---------|------|-------|--------|------|
-| 1 | 🧲 Magnet | 1080p | 12GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` |
-| 2 | ☁️ Quark | 4K | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: xxxx |
+| 1 | 🧲 Magnet | 1080p | 12GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 2 | ☁️ Quark | 4K | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` [🔗](https://pan.quark.cn/s/xxxx) `xxxx` |
 ```
 
 **Rules**: Info always comes first, even when zero download links are found. Stars converted from average rating (8.5+ → ★★★★★, 7-8.5 → ★★★★☆, 5.5-7 → ★★★☆☆). `references/output-templates.md` has full templates for all media types.

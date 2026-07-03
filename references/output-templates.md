@@ -24,9 +24,9 @@ Info is compact and front-loaded. Download links are the main content. Basic inf
 
 | # | Type | Quality | Size | Seeds | Status | Link |
 |---|------|---------|------|-------|--------|------|
-| 1 | 🧲 Magnet | 4K HDR | 22GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` |
-| 2 | 🧲 Magnet | 1080p | 8GB | 3200 | ✅ | `magnet:?xt=urn:btih:...` |
-| 3 | ☁️ Quark | 4K REMUX | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 1 | 🧲 Magnet | 4K HDR | 22GB | 1500 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 2 | 🧲 Magnet | 1080p | 8GB | 3200 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 3 | ☁️ Quark | 4K REMUX | 80GB | — | ✅ | `https://pan.quark.cn/s/xxxx` [🔗](https://pan.quark.cn/s/xxxx) `xxxx` |
 | 4 | ☁️ Baidu | 1080p | 7GB | — | ❌ | — |
 
 💡 For archiving: REMUX/BluRay. For daily watching: 1080p ~8GB is enough.
@@ -68,9 +68,9 @@ Info is compact and front-loaded. Download links are the main content. Basic inf
 
 | # | Type | Scope | Quality | Size | Seeds | Status | Link |
 |---|------|-------|---------|------|-------|--------|------|
-| 1 | 🧲 Magnet | Complete Series | 1080p | 142GB | 2800 | ✅ | `magnet:?xt=urn:btih:...` |
-| 2 | 🧲 Magnet | S01-S04 | 1080p | 48GB | 1200 | ✅ | `magnet:?xt=urn:btih:...` |
-| 3 | ☁️ Quark | Complete | 1080p | 142GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 1 | 🧲 Magnet | Complete Series | 1080p | 142GB | 2800 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 2 | 🧲 Magnet | S01-S04 | 1080p | 48GB | 1200 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 3 | ☁️ Quark | Complete | 1080p | 142GB | — | ✅ | `https://pan.quark.cn/s/xxxx` [🔗](https://pan.quark.cn/s/xxxx) `xxxx` |
 ```
 
 ---
@@ -93,9 +93,9 @@ Info is compact and front-loaded. Download links are the main content. Basic inf
 
 | # | Type | Scope | Quality | Size | Seeds | Status | Link |
 |---|------|-------|---------|------|-------|--------|------|
-| 1 | 🧲 Magnet | Batch | 1080p HEVC 10bit | 36GB | 4500 | ✅ | `magnet:?xt=urn:btih:...` |
-| 2 | 🧲 Magnet | Batch | 720p x264 | 18GB | 1800 | ✅ | `magnet:?xt=urn:btih:...` |
-| 3 | ☁️ Quark | Complete | 1080p | 36GB | — | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 1 | 🧲 Magnet | Batch | 1080p HEVC 10bit | 36GB | 4500 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 2 | 🧲 Magnet | Batch | 720p x264 | 18GB | 1800 | ✅ | `magnet:?xt=urn:btih:...` [🔗](magnet:?xt=urn:btih:...) |
+| 3 | ☁️ Quark | Complete | 1080p | 36GB | — | ✅ | `https://pan.quark.cn/s/xxxx` [🔗](https://pan.quark.cn/s/xxxx) `xxxx` |
 
 💡 **Batch** = complete series. HEVC 10bit is the standard (better quality, smaller size).
 ```
@@ -124,7 +124,7 @@ Info is compact and front-loaded. Download links are the main content. Basic inf
 
 | # | Type | Format | Size | Status | Link |
 |---|------|--------|------|--------|------|
-| 1 | ☁️ Quark | EPUB | 2MB | ✅ | `https://pan.quark.cn/s/xxxx` 提取码: `xxxx` |
+| 1 | ☁️ Quark | EPUB | 2MB | ✅ | `https://pan.quark.cn/s/xxxx` [🔗](https://pan.quark.cn/s/xxxx) `xxxx` |
 | 2 | ☁️ Baidu | PDF | 5MB | ❌ | — |
 
 💡 EPUB recommended for most readers. PDF for fixed-layout content.
